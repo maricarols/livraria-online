@@ -1,12 +1,17 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=DM+Serif+Display:ital@0;1&family=Fjalla+One&family=Lilita+One&family=Oleo+Script:wght@400;700&family=Unlock&family=Varela+Round&display=swap');
 body{
   font-family: "Nunito", sans-serif;
+  color: #292421;
+  background-color: #f7ede4;
 }
 a{
   text-decoration: none;
-  color: black;
 }
 template{
   font-family: "Nunito", sans-serif;
+}
+button{
+  cursor: pointer;
 }

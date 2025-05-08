@@ -44,6 +44,9 @@ let livroSelecionado = ref(sorteando());
 </script>
 
 <template>
+  <body>
+
+
      <header>
       <div class="logo">
         <a href="index.html">
@@ -76,6 +79,7 @@ let livroSelecionado = ref(sorteando());
         </li>
       </ul>
     </header>
+
     <main>
       <section class="exibicao">
         <div class="texto">
@@ -90,6 +94,32 @@ let livroSelecionado = ref(sorteando());
         </div>
       </section>
     </main>
+    <footer>
+      <div class="footer">
+        <div class="redes">
+          <p>Redes Sociais:</p>
+          <a href="#"><span class="fa-brands fa-facebook-f"></span></a>
+          <a href="#"><span class="fa-brands fa-twitter"></span></a>
+          <a href="#"><span class="fa-brands fa-instagram"></span></a>
+        </div>
+        <div class="contato">
+          <p>Contato</p>
+          <div class="contatos"><span class="fa-solid fa-phone"></span>
+            <p>+55 47 99032673</p>
+          </div>
+          <div class="contatos"><span class="fa-solid fa-clock"></span>
+            <p>8h às 22h - Seg a Sex</p>
+          </div>
+          <div class="contatos"><span class="fa-solid fa-envelope"></span>
+            <p>contato@livraria.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="direitos">
+        <p>&copy; Alguns direitos reservados. Livraria 2025.</p>
+      </div>
+    </footer>
+  </body>
 </template>
 
 <style scoped>
@@ -234,4 +264,40 @@ div p.capa img {
   box-shadow: 4px 4px 6px black;
 }
 
+footer {
+  background-color: #ca8e82;
+}
+
+footer div.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 4vw 6vw 4vw 6vw;
+}
+
+.footer p {
+  font-size: large;
+}
+
+.redes a span {
+  margin-top: 1vw;
+  margin-left: 1vw;
+  font-size: 1.4rem;
+  color: #292421;
+}
+
+.contato .contatos {
+  display: flex;
+  margin-top: 1vw;
+
+}
+
+.contatos span {
+  margin-right: 1vw;
+}
+
+.direitos {
+  text-align: center;
+  border-top: #f2d6ce solid 1px;
+  padding: 1vw;
+}
 </style>

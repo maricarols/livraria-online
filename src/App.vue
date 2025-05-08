@@ -93,6 +93,29 @@ let livroSelecionado = ref(sorteando());
           <p class="capa"><img class="principal" :src="livroSelecionado.capa" alt="#"></p>
         </div>
       </section>
+      <section class="mostrando">
+        <div>
+          <h2>Lançamentos</h2>
+          <ul class="lançamentos">
+            <li v-for="item in listaDeLivros" :key="item.id">
+              <img class="principal" :src="item.capa" alt="#">
+              <p class="titulo">
+                {{ item.name }}
+              </p>
+              <p class="escritor">
+                {{ item.autor }}
+              </p>
+              <p class="preco">
+                {{ item.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+              </p>
+              <button class="comprar"> <span
+                  class="fa-solid fa-cart-shopping"></span>
+
+              </button>
+            </li>
+          </ul>
+        </div>
+      </section>
     </main>
     <footer>
       <div class="footer">
@@ -299,5 +322,67 @@ footer div.footer {
   text-align: center;
   border-top: #f2d6ce solid 1px;
   padding: 1vw;
+}
+section.mostrando div {
+  margin: 3vw 0 0 0;
+
+}
+
+section.mostrando ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0 2vw;
+}
+
+section.mostrando li {
+  box-sizing: border-box;
+  width: 20%;
+  margin: 0 0 2vw 0;
+  padding: 0 1vw;
+  white-space: nowrap;
+}
+
+section.mostrando h2 {
+  font-size: 2rem;
+  margin-left: 1vw;
+  margin-bottom: 2vw;
+  text-align: center;
+}
+
+.lançamentos li img {
+  width: 100%;
+  height: 25vw;
+}
+
+.lançamentos p.titulo {
+  margin-top: 1vw;
+  font-weight: 600;
+  font-size: large;
+}
+
+.lançamentos p.escritor {
+  margin-top: 0.5vw;
+  font-weight: 100;
+}
+
+.lançamentos p.preco {
+  margin-top: 0.5vw;
+  margin-bottom: 0.5vw;
+  font-weight: 600;
+}
+
+.comprar {
+  padding: 0.5vw 0 0.5vw 0;
+  background-color: #ca8e82;
+  border-style: none;
+  cursor: pointer;
+  width: 100%;
+  color: #292421;
+  font-family: "Nunito", sans-serif;
+}
+
+.comprar span {
+  margin-right: 0.5vw;
 }
 </style>

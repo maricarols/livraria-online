@@ -1,8 +1,43 @@
 <script setup>
 import { ref } from "vue";
 let pesquisando = ref(``);
+let botaoCarrinho = ref(false);
+let livrosComprados = ref([]);
+let listaCarrinho = ref([]);
 function limpar() {
   pesquisando.value = ``;
+}
+function porNoCarrinho(livro) {
+  const existe = listaCarrinho.value.find(item => item.id === livro.id);
+  if (!existe) {
+    listaCarrinho.value.push({ ...livro, contador: 1 });
+    livrosComprados.value.push(livro.id);
+  }
+
+  else {
+    listaCarrinho.value.push({ ...livro, contador: 1 })
+
+  }
+}
+
+function tirarDoCarrinho(livro) {
+  if (livro.contador > 1) {
+    livro.contador--
+  }
+  else {
+    const index = listaCarrinho.value.findIndex(item => item.id === livro.id);
+    if (index !== -1) {
+      listaCarrinho.value.splice(index, 1);
+
+      const compradoIndex = livrosComprados.value.indexOf(livro.id);
+      if (compradoIndex !== -1) {
+        livrosComprados.value.splice(compradoIndex, 1);
+      }
+    }
+  }
+}
+function adicionar(livro) {
+  livro.contador++;
 }
 let listaDeLivros = ref([
   { id: 1, name: 'Anne de Green Gables', autor: 'Lucy Maud Montgomery', preco: 24.00, sinapse: 'Os irmãos Matthew e Marilla Cuthbert moram em uma linda propriedade em Green Gables. Eles decidem adotar um garoto órfão para ajudar nos serviços gerais, em troca de moradia. Qual não foi a surpresa dos dois ao receberem, em vez de um garoto, a adorável Anne, uma menina ruiva, sensível e cheia de vida. Encante-se com essa história adaptada por Donaldo Buchweitz a partir do adorável clássico de Lucy Maud Montgomery, Anne de Green Gables.', capa: 'public/images/annedegreengables.jpg', contador: 1 },
@@ -63,7 +98,7 @@ let livroSelecionado = ref(sorteando());
         <li>Envio</li>
         <li>Devoluções</li>
         <li>
-          <a href="#">
+          <a href="#" @click.prevent="botaoCarrinho = !botaoCarrinho">
             <span class="fa-solid fa-cart-shopping"></span>
           </a>
         </li>
@@ -81,7 +116,7 @@ let livroSelecionado = ref(sorteando());
     </header>
 
     <main>
-      <section class="exibicao">
+      <section class="exibicao" v-if="botaoCarrinho == false">
         <div class="texto">
           <p class="livroAbril">Livro de Abril</p>
           <h1 class="nome">{{ livroSelecionado.name }}</h1>
@@ -93,7 +128,7 @@ let livroSelecionado = ref(sorteando());
           <p class="capa"><img class="principal" :src="livroSelecionado.capa" alt="#"></p>
         </div>
       </section>
-      <section class="mostrando">
+      <section class="mostrando" v-if="botaoCarrinho == false">
         <div>
           <h2>Lançamentos</h2>
           <ul class="lançamentos">
@@ -108,12 +143,80 @@ let livroSelecionado = ref(sorteando());
               <p class="preco">
                 {{ item.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
               </p>
-              <button class="comprar"> <span
+              <button class="comprar" @click="porNoCarrinho(item)" :disabled="livrosComprados.includes(item.id)"> <span
                   class="fa-solid fa-cart-shopping"></span>
-
+                  {{ livrosComprados.includes(item.id) ? 'Comprado' : 'Comprar' }}
               </button>
             </li>
           </ul>
+        </div>
+      </section>
+      <section class="mostrandoCarrinho">
+        <div class="geral" v-if="listaCarrinho.length > 0">
+          <div class="carrinho" v-if="botaoCarrinho">
+            <h1>Carrinho</h1>
+            <div class="infoCarrinho linhaCarrinho">
+              <p>Título</p>
+              <p>Quantidade</p>
+              <p>Subtotal</p>
+            </div>
+            <ul>
+              <li v-for="item in listaCarrinho" :key="item.id">
+                <div class="itensFlex linhaCarrinho">
+                  <div class="infoLivro">
+                    <img class="imagemCarrinho" :src="item.capa" alt="#">
+                    <div>
+                      <p class="tituloCarrinho">
+                        {{ item.name }}
+                      </p>
+                      <p class="autorCarrinho">
+                        {{ item.autor }}
+                      </p>
+                      <p class="precoCarrinho">
+                        {{ item.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="button">
+                    <button @click="adicionar(item)">+</button>
+                    <p>{{ item.contador }}</p>
+                    <button @click="tirarDoCarrinho(item)">-</button>
+                  </div>
+                  <div class="subtotal">
+                    <p>{{ (item.preco * item.contador).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                      }}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <div class="carrinhoGeral">
+              <div class="separando">
+                <div class="total">
+                  <p>Produtos: {{listaCarrinho.reduce((inicial, item) => inicial + item.preco * item.contador,
+                    0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}}</p>
+                  <p>Frete: Grátis</p>
+                  <p>Total: {{listaCarrinho.reduce((inicial, item) => inicial + item.preco * item.contador,
+                    0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}}</p>
+                  <button @click="limpar">Iniciar o pagamento</button>
+                </div>
+                <button class="voltarLoja" @click="botaoCarrinho = false">Voltar para loja</button>
+              </div>
+              <div>
+                <div class="cupom">
+                  <input type="text" placeholder="Código do cupom" v-model="pesquisando">
+                  <button @click="limpar">Inserir Cupom</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="listaCarrinho.length == 0 && botaoCarrinho == true" class="carrinhoVazio">
+          <h2>Carrinho</h2>
+          <p>
+            Seu carrinho está vazio.
+          </p>
+          <button class="voltar" @click="botaoCarrinho = false">Voltar para loja</button>
         </div>
       </section>
     </main>
@@ -384,5 +487,204 @@ section.mostrando h2 {
 
 .comprar span {
   margin-right: 0.5vw;
+}
+.infoCarrinho {
+  display: flex;
+  padding-bottom: 1vw;
+  border-bottom: #f2d6ce solid 1px;
+}
+.carrinhoGeral{
+  display: flex;
+  justify-content: space-between;
+}
+.carrinhoVazio h2 {
+  font-size: 2rem;
+  margin-bottom: 2vw;
+}
+
+.carrinhoVazio p {
+  font-size: larger;
+  margin-bottom: 2vw;
+}
+
+.carrinhoVazio button {
+  padding: 0.7vw 2vw 0.7vw 2vw;
+  font-size: 1.2vw;
+  font-family: "Nunito", sans-serif;
+  border-style: none;
+  background-color: #ca8e82;
+  color: #292421;
+  border-radius: 9px;
+}
+
+.mostrandoCarrinho {
+  margin-top: 8vw;
+  margin-left: 15vw;
+  width: 70%;
+  align-items: center;
+  margin-bottom: 8vw;
+
+}
+
+.mostrandoCarrinho h1 {
+  font-size: 2rem;
+  margin-bottom: 3vw;
+}
+
+.infoCarrinho p {
+  font-size: large;
+  font-weight: 600;
+}
+
+.carrinho .imagemCarrinho {
+  width: 6vw;
+  height: 10vw;
+  max-width: 6vw;
+}
+
+.carrinho .button {
+  display: flex;
+  position: relative;
+}
+
+.itensFlex {
+  display: flex;
+  border-bottom: #f2d6ce solid 1px;
+  align-items: center;
+  margin-top: 2vw;
+}
+
+.infoLivro {
+  width: 6vw;
+  display: flex;
+  padding-bottom: 5vw;
+  margin-top: 2vw;
+  margin-left: 1vw;
+}
+
+.infoLivro div {
+  margin-left: 1vw;
+  margin-top: 1vw;
+}
+
+div .tituloCarrinho {
+
+  font-weight: 600;
+  font-size: 1.5rem;
+  white-space: nowrap;
+}
+
+div .autorCarrinho {
+  margin-top: 1vw;
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+div .precoCarrinho {
+  margin-top: 1vw;
+  font-weight: 600;
+  font-size: large;
+
+}
+
+.subtotal {
+  margin-right: 1vw;
+
+}
+
+.subtotal p {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #292421;
+  ;
+}
+
+.linhaCarrinho {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.total {
+  margin-top: 2vw;
+  border: #ca8e82 solid 1px;
+  width: 100%;
+  padding: 1vw;
+  border-radius: 8px;
+}
+
+.total button {
+  border-style: none;
+  background-color: #ca8e82;
+  color: #292421;
+  padding: 0.5vw 1vw 0.5vw 1vw;
+  margin-left: 1vw;
+  font-size: 1.1vw;
+  font-family: "Nunito", sans-serif;
+  border-radius: 9px;
+}
+
+.total p {
+  margin-bottom: 1vw;
+  font-size: 1.2rem;
+}
+
+.cupom {
+  margin-top: 5vw;
+}
+
+.cupom button {
+  border-style: none;
+  background-color: #ca8e82;
+  color: #292421;
+  padding: 0.5vw 1vw 0.5vw 1vw;
+  margin-left: 1vw;
+  font-size: 1.1vw;
+  font-family: "Nunito", sans-serif;
+  border-radius: 9px;
+}
+
+.cupom input {
+  padding: 1vw 2vw 1vw 2vw;
+  font-size: 1.2vw;
+  font-family: "Nunito", sans-serif;
+  border-radius: 9px;
+}
+
+.button button {
+  border-style: none;
+  background: none;
+  font-size: 1.5vw;
+  color: #292421;
+  ;
+}
+
+.button p {
+  font-size: large;
+  margin-top: 4px;
+  margin-left: 1vw;
+  margin-right: 1vw;
+  color: #292421;
+}
+
+.button {
+  border: #f2d6ce solid 1.5px;
+  background-color: #ca8e82;
+  padding: 0.5vw 0 0.5vw 0;
+  font-weight: 600;
+  margin-bottom: 2vw;
+  color: #292421;
+  border-radius: 9px;
+}
+
+.voltarLoja {
+  padding: 0.7vw 2vw 0.7vw 2vw;
+  font-size: 1.2vw;
+  font-family: "Nunito", sans-serif;
+  margin-top: 3vw;
+  border-style: none;
+  background-color: #ca8e82;
+  color: #292421;
+  border-radius: 9px;
 }
 </style>
